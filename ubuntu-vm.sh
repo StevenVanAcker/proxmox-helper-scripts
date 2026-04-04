@@ -29,6 +29,7 @@ VLAN="${VLAN:-}"
 MTU="${MTU:-}"
 STORAGE="${STORAGE:-}"
 START_VM="${START_VM:-no}"
+MAKE_TEMPLATE="${MAKE_TEMPLATE:-yes}"
 
 URL="https://cloud-images.ubuntu.com/${CODENAME}/current/${CODENAME}-server-cloudimg-amd64.img"
 
@@ -94,6 +95,11 @@ qm set "$VMID" \
   -serial0  socket >/dev/null
 echo "Resizing disk to ${DISK_SIZE}..."
 qm resize "$VMID" scsi0 "${DISK_SIZE}" >/dev/null
+
+if [ "$MAKE_TEMPLATE" = "yes" ]; then
+  echo "Converting to template..."
+  qm template "$VMID"
+fi
 
 [ "$START_VM" = "yes" ] && qm start "$VMID"
 
